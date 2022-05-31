@@ -17,7 +17,7 @@ export class HttpClient {
     private readonly _initializers: TaskController;
     private _requestHandler!: IRequestHandler;
 
-    constructor(options: Partial<HttpClientOptions> = {}, requestHandler?: IRequestHandler) {
+    constructor(options: HttpClientOptions = {}, requestHandler?: IRequestHandler) {
         this._options = options;
         this._initializers = new TaskController();
         this.setRequestHandler(requestHandler ?? new RequestHandler());
