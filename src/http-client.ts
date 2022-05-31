@@ -6,12 +6,19 @@ import { HttpBody } from "./http-body";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
+export type HttpClientOptions = {
+    readonly baseAddress?: string;
+    readonly defaultHeaders?: Record<string, string>;
+}
+
 /** Represents an client for easy use of http transactions */
 export class HttpClient {
+    private readonly _options: HttpClientOptions;
     private readonly _initializers: TaskController;
     private _requestHandler!: IRequestHandler;
 
-    constructor(requestHandler?: IRequestHandler) {
+    constructor(options: Partial<HttpClientOptions> = {}, requestHandler?: IRequestHandler) {
+        this._options = options;
         this._initializers = new TaskController();
         this.setRequestHandler(requestHandler ?? new RequestHandler());
     }
@@ -54,12 +61,25 @@ export class HttpClient {
     async fetch(uri: string | URL, method: HttpMethod, body: HttpBody | null, headers: Record<string, string> | null, token?: AbortToken): Promise<Response> {
         if (this._initializers.remaing) await this._initializers.whenAll();
 
-        headers ??= {};
+        const url = this.resolveUrl(uri);
+
+        headers = { ...this._options.defaultHeaders, ...headers };
+
         const requestInit: RequestInit = { headers, method };
         if (body) {
             headers["Content-Type"] = body.contentType;
             requestInit.body = body.content();
         }
-        return this._requestHandler.fetch(uri.toString(), requestInit, token ?? AbortToken.none);
+        return this._requestHandler.fetch(url.toString(), requestInit, token ?? AbortToken.none);
+    }
+
+    private resolveUrl(uri: string | URL): URL {
+        if (uri instanceof URL) return uri;
+
+        if (this._options.baseAddress) {
+            return new URL(uri, this._options.baseAddress);
+        }
+
+        return new URL(uri);
     }
 }
