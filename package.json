@@ -1,15 +1,13 @@
 {
   "name": "@aster-js/http",
-  "version": "1.0.0",
-  "description": "Aster core library part of Aster js library",
+  "version": "1.0.1",
+  "description": "Aster http client library part of Aster js library",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "tsc",
-    "bundle": "rollup -c",
-    "build-bundle": "tsc && rollup -c",
-    "run-test": "karma start",
-    "build-test": "tsc --project tests/tsconfig.json",
+    "debug": "tsc --project tests/tsconfig.json  && rollup -c && karma start karma.debug.js",
     "test": "tsc --project tests/tsconfig.json  && rollup -c && karma start"
   },
   "directories": {
