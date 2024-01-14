@@ -17,7 +17,7 @@ const httpClient = new HttpClient()
     })
     // Multiple RequestHandler implementation:
     // timeout, caching, dynamic configuration or custom implementations
-    .use(TimeoutRequestHandler, 30 * 1000);
+    .pipe(TimeoutRequestHandler, 30 * 1000);
 
 
 
